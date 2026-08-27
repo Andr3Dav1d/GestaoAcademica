@@ -16,13 +16,11 @@ import {
   SideNavItems,
   SideNavLink,
 } from '@carbon/react'
-import { Asleep, Light, Logout } from '@carbon/icons-react'
-import { useAppTheme } from './ThemeProvider'
+import { Logout } from '@carbon/icons-react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { theme, toggleTheme } = useAppTheme()
   const [isSideNavExpanded, setIsSideNavExpanded] = useState(false)
 
   const isLoginPage = pathname === '/login'
@@ -70,12 +68,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </HeaderMenuItem>
         </HeaderNavigation>
         <HeaderGlobalBar>
-          <HeaderGlobalAction
-            aria-label={`Tema: ${theme === 'g10' ? 'Claro (g10)' : 'Escuro (g100)'}`}
-            onClick={toggleTheme}
-          >
-            {theme === 'g10' ? <Asleep size={20} /> : <Light size={20} />}
-          </HeaderGlobalAction>
           <HeaderGlobalAction aria-label="Sair do sistema" onClick={handleLogout}>
             <Logout size={20} />
           </HeaderGlobalAction>
