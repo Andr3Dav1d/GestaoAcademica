@@ -18,7 +18,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: f095fd54b5e10648524a9887
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: gestao_academica
     volumes:
       - postgres_data:/var/lib/postgresql/data
