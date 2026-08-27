@@ -161,24 +161,6 @@ export default function HorarioFixoPage() {
     }
   }
 
-  const headers = [
-    { key: 'dia', header: 'Dia da Semana' },
-    { key: 'horario', header: 'Horário' },
-    { key: 'disciplina', header: 'Disciplina' },
-    { key: 'professor', header: 'Professor' },
-    { key: 'sala', header: 'Sala Padrão' },
-    { key: 'actions', header: 'Ações' },
-  ]
-
-  const rows = horarios.map((h) => ({
-    id: h.id,
-    dia: DIAS_SEMANA.find((d) => d.value === h.diaSemana)?.label || `Dia ${h.diaSemana}`,
-    horario: `${h.horaInicio} - ${h.horaFim}`,
-    disciplina: h.disciplina.nome,
-    professor: h.professor,
-    sala: h.salaPadrao,
-  }))
-
   if (loading) return <Loading description="Carregando horários fixos..." />
 
   return (
@@ -195,73 +177,105 @@ export default function HorarioFixoPage() {
 
       {error && <InlineNotification kind="error" title="Erro:" subtitle={error} style={{ marginBottom: '1.5rem' }} />}
 
-      <Tile style={{ padding: '1rem' }}>
-        <DataTable rows={rows} headers={headers}>
-          {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-            <div style={{ overflowX: 'auto' }}>
-              <Table {...getTableProps()}>
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => {
-                    const { key, ...headerProps } = getHeaderProps({ header })
-                    return (
-                      <TableHeader key={key || header.key} {...headerProps}>
-                        {header.header}
-                      </TableHeader>
-                    )
-                  })}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} style={{ textAlign: 'center', fontStyle: 'italic', padding: '2rem' }}>
-                      Nenhum horário fixo cadastrado ainda. Clique em &quot;Novo Horário&quot; para adicionar.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  rows.map((row) => {
-                    const item = horarios.find((h) => h.id === row.id)
-                    const { key, ...rowProps } = getRowProps({ row })
-                    return (
-                      <TableRow key={key || row.id} {...rowProps}>
-                        <TableCell>{row.cells[0].value}</TableCell>
-                        <TableCell>{row.cells[1].value}</TableCell>
-                        <TableCell>{row.cells[2].value}</TableCell>
-                        <TableCell>{row.cells[3].value}</TableCell>
-                        <TableCell>{row.cells[4].value}</TableCell>
-                        <TableCell>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {item && (
-                              <Button
-                                kind="ghost"
-                                size="sm"
-                                hasIconOnly
-                                renderIcon={Edit}
-                                iconDescription="Editar"
-                                onClick={() => handleOpenEditModal(item)}
-                              />
-                            )}
-                            <Button
-                              kind="ghost"
-                              size="sm"
-                              hasIconOnly
-                              renderIcon={TrashCan}
-                              iconDescription="Excluir"
-                              onClick={() => handleDelete(row.id)}
-                            />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-            </div>
-          )}
-        </DataTable>
-      </Tile>
+      {horarios.length === 0 ? (
+        <Tile style={{ padding: '2rem', textAlign: 'center' }}>
+          <p style={{ fontStyle: 'italic', marginBottom: '1rem' }}>Nenhum horário fixo cadastrado ainda.</p>
+          <Button renderIcon={Add} onClick={handleOpenCreateModal}>
+            Cadastrar Primeiro Horário
+          </Button>
+        </Tile>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {DIAS_SEMANA.map((dia) => {
+            const horariosDoDia = horarios
+              .filter((h) => h.diaSemana === dia.value)
+              .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
+
+            if (horariosDoDia.length === 0) return null
+
+            return (
+              <Tile key={dia.value} style={{ padding: '1.25rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--cds-border-subtle, #222222)', paddingBottom: '0.5rem' }}>
+                  {dia.label}
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {horariosDoDia.map((item) => (
+                    <div
+                      key={item.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.75rem 1rem',
+                        background: 'var(--cds-layer-01, #0d0d0d)',
+                        border: '1px solid var(--cds-border-subtle, #222222)',
+                        borderRadius: '4px',
+                        flexWrap: 'wrap',
+                        gap: '1rem',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', flex: 1 }}>
+                        {/* Horário */}
+                        <div style={{
+                          fontWeight: 600,
+                          fontSize: '1rem',
+                          background: 'var(--cds-layer-02, #161616)',
+                          border: '1px solid var(--cds-border-subtle, #222222)',
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '4px',
+                          color: '#0f62fe',
+                          minWidth: '110px',
+                          textAlign: 'center'
+                        }}>
+                          {item.horaInicio} - {item.horaFim}
+                        </div>
+
+                        {/* Disciplina e Professor */}
+                        <div style={{ flex: 1, minWidth: '200px' }}>
+                          <h4 style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.15rem' }}>
+                            {item.disciplina.nome}
+                          </h4>
+                          <span style={{ fontSize: '0.85rem', color: '#8d8d8d' }}>
+                            Prof(a). {item.professor}
+                          </span>
+                        </div>
+
+                        {/* Sala */}
+                        <div>
+                          <span className="badge-sala" style={{ backgroundColor: '#161616', border: '1px solid #333333', color: '#f4f4f4', padding: '4px 10px' }}>
+                            Sala: {item.salaPadrao}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Ações */}
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Button
+                          kind="ghost"
+                          size="sm"
+                          hasIconOnly
+                          renderIcon={Edit}
+                          iconDescription="Editar"
+                          onClick={() => handleOpenEditModal(item)}
+                        />
+                        <Button
+                          kind="ghost"
+                          size="sm"
+                          hasIconOnly
+                          renderIcon={TrashCan}
+                          iconDescription="Excluir"
+                          onClick={() => handleDelete(item.id)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Tile>
+            )
+          })}
+        </div>
+      )}
 
       <Modal
         open={modalOpen}
