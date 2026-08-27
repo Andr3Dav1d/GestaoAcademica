@@ -1,0 +1,130 @@
+@import '@carbon/styles/css/styles.css';
+
+:root {
+  --cds-background: #f4f4f4;
+  --cds-text-primary: #161616;
+}
+
+[data-carbon-theme='g100'] {
+  --cds-background: #161616;
+  --cds-text-primary: #f4f4f4;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--cds-background);
+  color: var(--cds-text-primary);
+  min-height: 100vh;
+}
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .kanban-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kanban-column {
+  background: var(--cds-layer-01, #ffffff);
+  border-radius: 4px;
+  padding: 1rem;
+  min-height: 500px;
+  border: 1px solid var(--cds-border-subtle, #e0e0e0);
+}
+
+[data-carbon-theme='g100'] .kanban-column {
+  background: #262626;
+  border-color: #393939;
+}
+
+.kanban-card {
+  background: var(--cds-layer-02, #f4f4f4);
+  border: 1px solid var(--cds-border-subtle, #e0e0e0);
+  border-radius: 4px;
+  padding: 0.85rem;
+  margin-bottom: 0.75rem;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-carbon-theme='g100'] .kanban-card {
+  background: #393939;
+  border-color: #525252;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+.kanban-card.dragging {
+  opacity: 0.5;
+}
+
+.badge-lab {
+  background-color: #24a148;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-sala {
+  background-color: #0f62fe;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-urgent {
+  background-color: #f1c21b;
+  color: #161616;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-overdue {
+  background-color: #da1e28;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[data-carbon-theme='g100'] .cds--tabs,
+[data-carbon-theme='g100'] .cds--tab,
+[data-carbon-theme='g100'] .cds--tab__text,
+[data-carbon-theme='g100'] .cds--tab-list {
+  color: var(--cds-text-primary) !important;
+}
+
+[data-carbon-theme='g100'] .cds--tab--selected .cds--tab__text {
+  color: var(--cds-text-primary) !important;
+}
+
+[data-carbon-theme='g100'] .cds--tile {
+  background: var(--cds-layer-01, #262626);
+  border: 1px solid var(--cds-border-subtle, #393939);
+}

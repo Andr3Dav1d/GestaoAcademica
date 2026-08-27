@@ -1,0 +1,34 @@
+# Exemplo de docker-compose para Produção / VPS com Traefik
+# Renomeie ou copie para docker-compose.override.yml na sua VPS
+
+services:
+  app:
+    # Em produção, usa a rede externa do Traefik e do Postgres existente
+    networks:
+      - traefik-net
+      - vps-postgres-net
+    environment:
+      # Aponta para o serviço PostgreSQL já existente na VPS
+      - DATABASE_URL=postgresql://usuario_vps:senha_vps@postgres-vps-host:5432/gestao_academica
+      - AUTH_USERNAME=seu_usuario
+      - AUTH_PASSWORD_HASH=$2a$10$ExemploDeHashBcryptAqui...
+      - JWT_SECRET=seu_secret_jwt_super_seguro
+      - GESTAO_SALAS_TENANT=alcindo
+      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/sua-url-aqui
+      - APP_URL=https://gestao.seudominio.com.br
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gestao-academica.rule=Host(`gestao.seudominio.com.br`)"
+      - "traefik.http.routers.gestao-academica.entrypoints=websecure"
+      - "traefik.http.routers.gestao-academica.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gestao-academica.loadbalancer.server.port=3000"
+
+  # O serviço postgres local é removido/desativado no ambiente VPS
+  postgres:
+    profiles: ["disabled"]
+
+networks:
+  traefik-net:
+    external: true
+  vps-postgres-net:
+    external: true

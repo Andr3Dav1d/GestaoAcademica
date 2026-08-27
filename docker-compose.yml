@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gestao-academica-app
+    restart: always
+    user: "0:0"
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://gestao_user:gestao_pass@postgres:5432/gestao_academica
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - AUTH_PASSWORD_HASH=${AUTH_PASSWORD_HASH:-}
+      - AUTH_PASSWORD=${AUTH_PASSWORD:-admin123}
+      - JWT_SECRET=${JWT_SECRET:-gestao-academica-jwt-secret-key-change-me}
+      - GESTAO_SALAS_TENANT=${GESTAO_SALAS_TENANT:-alcindo}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      - APP_URL=${APP_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: gestao-academica-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: gestao_user
+      POSTGRES_PASSWORD: gestao_pass
+      POSTGRES_DB: gestao_academica
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestao_user -d gestao_academica"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
