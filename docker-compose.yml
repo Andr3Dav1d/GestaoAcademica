@@ -8,8 +8,6 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgresql://gestao_user:gestao_pass@postgres:5432/gestao_academica
     depends_on:
       postgres:
         condition: service_healthy
@@ -19,15 +17,13 @@ services:
     container_name: gestao-academica-postgres
     restart: always
     environment:
-      POSTGRES_USER: gestao_user
-      POSTGRES_PASSWORD: gestao_pass
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: f095fd54b5e10648524a9887
       POSTGRES_DB: gestao_academica
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gestao_user -d gestao_academica"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d gestao_academica"]
       interval: 5s
       timeout: 5s
       retries: 5
