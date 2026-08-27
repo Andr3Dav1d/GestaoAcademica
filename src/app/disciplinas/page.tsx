@@ -256,7 +256,7 @@ export default function DisciplinasPage() {
   return (
     <div style={{ padding: '1rem 0' }}>
       {/* Cabeçalho */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 600 }}>Disciplinas &amp; Grupos</h1>
           <p style={{ color: '#6f6f6f' }}>Gerencie os materiais da aula e a relação de grupos de trabalho por disciplina.</p>
@@ -310,12 +310,12 @@ export default function DisciplinasPage() {
             return (
               <div style={{ paddingTop: '1.5rem' }}>
                 {/* Cabeçalho da disciplina */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                   <div>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{disc.nome}</h2>
                     <p style={{ color: '#6f6f6f' }}>Período: {disc.periodo}</p>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <Button kind="tertiary" size="sm" renderIcon={Edit} onClick={() => handleOpenEditDisc(disc)}>
                       Editar Disciplina
                     </Button>
@@ -327,7 +327,7 @@ export default function DisciplinasPage() {
 
                 {/* Material SharePoint */}
                 <Tile style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Material de Aula (SharePoint)</h3>
                     {discSharePointUrl && (
                       <a href={discSharePointUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
@@ -344,7 +344,7 @@ export default function DisciplinasPage() {
                       subtitle="Edite a disciplina para informar o siteId do SharePoint/Teams."
                     />
                   ) : (
-                    <div style={{ background: '#f4f4f4', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem', color: '#525252', fontSize: '0.85rem' }}>
+                    <div style={{ background: '#161616', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem', color: '#f4f4f4', fontSize: '0.85rem', border: '1px solid #222222' }}>
                       ℹ️ <strong>Aviso:</strong> O SharePoint não permite incorporação via iframe. Use o botão <strong>&quot;Abrir no SharePoint&quot;</strong> acima para acessar o material.
                     </div>
                   )}
@@ -352,11 +352,11 @@ export default function DisciplinasPage() {
 
                 {/* Grupos de Trabalho */}
                 <Tile style={{ padding: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
                       Grupos de Trabalho ({disc.grupos?.length || 0})
                     </h3>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <Button kind="secondary" size="sm" renderIcon={Download} onClick={handleExportCSV}>
                         Exportar CSV
                       </Button>
@@ -388,58 +388,68 @@ export default function DisciplinasPage() {
                       ]}
                     >
                       {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-                        <Table {...getTableProps()}>
-                          <TableHead>
-                            <TableRow>
-                              {headers.map((header) => {
-                                const { key, ...headerProps } = getHeaderProps({ header })
+                        <div style={{ overflowX: 'auto' }}>
+                          <Table {...getTableProps()}>
+                            <TableHead>
+                              <TableRow>
+                                {headers.map((header) => {
+                                  const { key, ...headerProps } = getHeaderProps({ header })
+                                  return (
+                                    <TableHeader key={key || header.key} {...headerProps}>
+                                      {header.header}
+                                    </TableHeader>
+                                  )
+                                })}
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {rows.map((row) => {
+                                const grupoObj = disc.grupos?.find((g) => g.id === row.id)
+                                const { key, ...rowProps } = getRowProps({ row })
                                 return (
-                                  <TableHeader key={key || header.key} {...headerProps}>
-                                    {header.header}
-                                  </TableHeader>
-                                )
-                              })}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {rows.map((row) => {
-                              const grupoObj = disc.grupos?.find((g) => g.id === row.id)
-                              const { key, ...rowProps } = getRowProps({ row })
-                              return (
-                                <TableRow key={key || row.id} {...rowProps}>
-                                  <TableCell style={{ fontWeight: 600 }}>{row.cells[0].value}</TableCell>
-                                  <TableCell>{row.cells[1].value}</TableCell>
-                                  <TableCell>
-                                    <Tag type="blue">{row.cells[2].value}</Tag>
-                                  </TableCell>
-                                  <TableCell style={{ maxWidth: '300px' }}>{row.cells[3].value}</TableCell>
-                                  <TableCell>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                      {grupoObj && (
+                                  <TableRow key={key || row.id} {...rowProps}>
+                                    <TableCell style={{ fontWeight: 600 }}>{row.cells[0].value}</TableCell>
+                                    <TableCell>{row.cells[1].value}</TableCell>
+                                    <TableCell>
+                                      <Tag type="blue">{row.cells[2].value}</Tag>
+                                    </TableCell>
+                                    <TableCell style={{ minWidth: '220px', padding: '0.75rem 1rem' }}>
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                        {grupoObj?.participantes?.map((p, idx) => (
+                                          <div key={idx} style={{ fontSize: '0.875rem', lineHeight: '1.25' }}>
+                                            {p}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        {grupoObj && (
+                                          <Button
+                                            kind="ghost"
+                                            size="sm"
+                                            hasIconOnly
+                                            renderIcon={Edit}
+                                            iconDescription="Editar"
+                                            onClick={() => handleOpenEditGrupo(grupoObj)}
+                                          />
+                                        )}
                                         <Button
                                           kind="ghost"
                                           size="sm"
                                           hasIconOnly
-                                          renderIcon={Edit}
-                                          iconDescription="Editar"
-                                          onClick={() => handleOpenEditGrupo(grupoObj)}
+                                          renderIcon={TrashCan}
+                                          iconDescription="Excluir"
+                                          onClick={() => handleDeleteGrupo(row.id)}
                                         />
-                                      )}
-                                      <Button
-                                        kind="ghost"
-                                        size="sm"
-                                        hasIconOnly
-                                        renderIcon={TrashCan}
-                                        iconDescription="Excluir"
-                                        onClick={() => handleDeleteGrupo(row.id)}
-                                      />
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            })}
-                          </TableBody>
-                        </Table>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              })}
+                            </TableBody>
+                          </Table>
+                        </div>
                       )}
                     </DataTable>
                   )}

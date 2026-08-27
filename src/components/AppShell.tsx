@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -11,6 +11,10 @@ import {
   HeaderGlobalBar,
   HeaderGlobalAction,
   Content,
+  HeaderMenuButton,
+  SideNav,
+  SideNavItems,
+  SideNavLink,
 } from '@carbon/react'
 import { Asleep, Light, Logout } from '@carbon/icons-react'
 import { useAppTheme } from './ThemeProvider'
@@ -19,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, toggleTheme } = useAppTheme()
+  const [isSideNavExpanded, setIsSideNavExpanded] = useState(false)
 
   const isLoginPage = pathname === '/login'
 
@@ -39,6 +44,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-shell">
       <Header aria-label="Gestão Acadêmica">
+        <HeaderMenuButton
+          aria-label={isSideNavExpanded ? 'Fechar menu' : 'Abrir menu'}
+          onClick={() => setIsSideNavExpanded(!isSideNavExpanded)}
+          isActive={isSideNavExpanded}
+        />
         <HeaderName href="/dashboard" prefix="ADS">
           Gestão Acadêmica
         </HeaderName>
@@ -71,6 +81,32 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </HeaderGlobalAction>
         </HeaderGlobalBar>
       </Header>
+      
+      <SideNav
+        aria-label="Navegação Lateral"
+        expanded={isSideNavExpanded}
+        isPersistent={false}
+        onOverlayClick={() => setIsSideNavExpanded(false)}
+      >
+        <SideNavItems>
+          <SideNavLink href="/dashboard" isActive={pathname === '/dashboard' || pathname === '/'}>
+            Dashboard
+          </SideNavLink>
+          <SideNavLink href="/horario-fixo" isActive={pathname === '/horario-fixo'}>
+            Horário Fixo
+          </SideNavLink>
+          <SideNavLink href="/disciplinas" isActive={pathname.startsWith('/disciplinas')}>
+            Disciplinas & Grupos
+          </SideNavLink>
+          <SideNavLink href="/kanban" isActive={pathname === '/kanban'}>
+            Kanban
+          </SideNavLink>
+          <SideNavLink href="/configuracoes" isActive={pathname === '/configuracoes'}>
+            Configurações
+          </SideNavLink>
+        </SideNavItems>
+      </SideNav>
+
       <Content style={{ paddingTop: '4rem', minHeight: 'calc(100vh - 4rem)' }}>{children}</Content>
     </div>
   )

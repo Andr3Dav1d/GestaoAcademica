@@ -183,7 +183,7 @@ export default function HorarioFixoPage() {
 
   return (
     <div style={{ padding: '1rem 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 600 }}>Horário Fixo Semanal</h1>
           <p style={{ color: '#6f6f6f' }}>Cadastre suas disciplinas e horários normais da semana pro semestre.</p>
@@ -198,7 +198,8 @@ export default function HorarioFixoPage() {
       <Tile style={{ padding: '1rem' }}>
         <DataTable rows={rows} headers={headers}>
           {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-            <Table {...getTableProps()}>
+            <div style={{ overflowX: 'auto' }}>
+              <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>
                   {headers.map((header) => {
@@ -257,6 +258,7 @@ export default function HorarioFixoPage() {
                 )}
               </TableBody>
             </Table>
+            </div>
           )}
         </DataTable>
       </Tile>

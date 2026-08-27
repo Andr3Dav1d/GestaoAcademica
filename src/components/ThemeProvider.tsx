@@ -11,12 +11,12 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'g10',
+  theme: 'g100',
   toggleTheme: () => {},
 })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<ThemeMode>('g10')
+  const [theme, setTheme] = useState<ThemeMode>('g100')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

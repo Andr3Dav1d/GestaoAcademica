@@ -168,7 +168,7 @@ export default function ConfiguracoesPage() {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <Button type="submit" renderIcon={Save} disabled={saving}>
               {saving ? 'Salvando...' : 'Salvar Configurações'}
             </Button>

@@ -199,20 +199,12 @@ export default function DashboardPage() {
                         padding: '0.75rem',
                         background: 'var(--cds-layer-02, #f4f4f4)',
                         borderRadius: '4px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
                       }}
                     >
-                      <div>
-                        <strong>{lab.nome_sala}</strong>
-                        {lab.observacao && (
-                          <div style={{ fontSize: '0.8rem', color: '#6f6f6f' }}>{lab.observacao}</div>
-                        )}
-                      </div>
-                      <Tag type={lab.ocupacao > lab.quantidade_computadores ? 'red' : 'green'}>
-                        {lab.ocupacao} / {lab.quantidade_computadores} computadores
-                      </Tag>
+                      <strong>{lab.nome_sala}</strong>
+                      {lab.observacao && (
+                        <div style={{ fontSize: '0.8rem', color: '#6f6f6f' }}>{lab.observacao}</div>
+                      )}
                     </div>
                   ))}
                 </div>
