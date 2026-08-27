@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/andr3dav1d/gestaoacademica:latest
     container_name: gestao-academica-app
     restart: always
     user: "0:0"
