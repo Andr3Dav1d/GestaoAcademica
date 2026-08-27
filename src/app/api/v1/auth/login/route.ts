@@ -11,17 +11,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Usuário e senha são obrigatórios' }, { status: 400 })
     }
 
-    const expectedUser = process.env.AUTH_USERNAME || 'admin'
-    const expectedHash = process.env.AUTH_PASSWORD_HASH
-    const expectedPlain = process.env.AUTH_PASSWORD || 'admin123'
+    const expectedUser1 = process.env.AUTH_USERNAME_1 || process.env.AUTH_USERNAME || 'admin'
+    const expectedHash1 = process.env.AUTH_PASSWORD_HASH_1 || process.env.AUTH_PASSWORD_HASH
+    const expectedPlain1 = process.env.AUTH_PASSWORD_1 || process.env.AUTH_PASSWORD || 'admin123'
+
+    const expectedUser2 = process.env.AUTH_USERNAME_2
+    const expectedHash2 = process.env.AUTH_PASSWORD_HASH_2
+    const expectedPlain2 = process.env.AUTH_PASSWORD_2
 
     let isValid = false
 
-    if (username === expectedUser) {
-      if (expectedHash) {
-        isValid = await bcrypt.compare(password, expectedHash)
+    if (username === expectedUser1) {
+      if (expectedHash1) {
+        isValid = await bcrypt.compare(password, expectedHash1)
       } else {
-        isValid = password === expectedPlain
+        isValid = password === expectedPlain1
+      }
+    } else if (expectedUser2 && username === expectedUser2) {
+      if (expectedHash2) {
+        isValid = await bcrypt.compare(password, expectedHash2)
+      } else {
+        isValid = password === expectedPlain2
       }
     }
 
