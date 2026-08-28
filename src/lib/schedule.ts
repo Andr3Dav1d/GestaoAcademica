@@ -68,7 +68,7 @@ function matchProfessor(prof1: string, prof2: string): { matched: boolean; lowCo
   return { matched: common.length >= 2, lowConfidence: common.length >= 2 }
 }
 
-export async function getTodaySchedule(customDay?: number): Promise<TodayScheduleResult> {
+export async function getTodaySchedule(customDay?: number, forceRefresh?: boolean): Promise<TodayScheduleResult> {
   const now = new Date()
   const diaSemana = customDay || (now.getDay() === 0 ? 7 : now.getDay())
 
@@ -78,7 +78,7 @@ export async function getTodaySchedule(customDay?: number): Promise<TodaySchedul
     orderBy: [asc(horariosFixos.horaInicio)],
   })
 
-  const salasData = await fetchSalasToday()
+  const salasData = await fetchSalasToday(forceRefresh)
 
   const horarioHoje: TodayScheduleItem[] = aulasHoje.map((hf) => {
     const matchedAgendamento = salasData.agendamentos.find((ag) => {

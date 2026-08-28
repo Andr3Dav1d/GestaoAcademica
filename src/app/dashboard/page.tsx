@@ -18,7 +18,7 @@ import {
   TableBody,
   TableCell,
 } from '@carbon/react'
-import { ArrowRight, Time, Location, UserFollow } from '@carbon/icons-react'
+import { ArrowRight, Time, Location, UserFollow, Renew } from '@carbon/icons-react'
 
 interface TodayItem {
   id: string
@@ -69,39 +69,46 @@ export default function DashboardPage() {
   const [diaSemana, setDiaSemana] = useState<number>(1)
   const [urgentTasks, setUrgentTasks] = useState<Tarefa[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    async function loadData() {
-      try {
+  async function loadData(forceRefresh = false) {
+    try {
+      if (forceRefresh) {
+        setRefreshing(true)
+      } else {
         setLoading(true)
-        const [dashRes, tasksRes] = await Promise.all([
-          fetch('/api/v1/dashboard/hoje'),
-          fetch('/api/v1/tarefas'),
-        ])
-
-        if (!dashRes.ok) throw new Error('Erro ao carregar agenda de hoje')
-        const dashData = await dashRes.json()
-        setSchedule(dashData.horarioHoje || [])
-        setFreeLabs(dashData.salasAcessoLivre || [])
-        setDiaSemana(dashData.diaSemana || 1)
-
-        if (tasksRes.ok) {
-          const tasksData: Tarefa[] = await tasksRes.json()
-          const pending = tasksData
-            .filter((t) => t.status !== 'CONCLUIDO')
-            .sort((a, b) => new Date(a.prazo).getTime() - new Date(b.prazo).getTime())
-            .slice(0, 3)
-          setUrgentTasks(pending)
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message)
-        else setError('Erro ao carregar dados do dashboard')
-      } finally {
-        setLoading(false)
       }
-    }
+      setError('')
+      const [dashRes, tasksRes] = await Promise.all([
+        fetch(forceRefresh ? '/api/v1/dashboard/hoje?refresh=true' : '/api/v1/dashboard/hoje'),
+        fetch('/api/v1/tarefas'),
+      ])
 
+      if (!dashRes.ok) throw new Error('Erro ao carregar agenda de hoje')
+      const dashData = await dashRes.json()
+      setSchedule(dashData.horarioHoje || [])
+      setFreeLabs(dashData.salasAcessoLivre || [])
+      setDiaSemana(dashData.diaSemana || 1)
+
+      if (tasksRes.ok) {
+        const tasksData: Tarefa[] = await tasksRes.json()
+        const pending = tasksData
+          .filter((t) => t.status !== 'CONCLUIDO')
+          .sort((a, b) => new Date(a.prazo).getTime() - new Date(b.prazo).getTime())
+          .slice(0, 3)
+        setUrgentTasks(pending)
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('Erro ao carregar dados do dashboard')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
     loadData()
   }, [])
 
@@ -111,11 +118,22 @@ export default function DashboardPage() {
 
   return (
     <div style={{ padding: '1rem 0' }}>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 600 }}>Dashboard Acadêmico</h1>
-        <p style={{ color: '#6f6f6f' }}>
-          Hoje é {DIA_SEMANA_MAP[diaSemana] || 'Dia de aula'}. Veja sua grade de hoje e tarefas pendentes.
-        </p>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 600 }}>Dashboard Acadêmico</h1>
+          <p style={{ color: '#6f6f6f' }}>
+            Hoje é {DIA_SEMANA_MAP[diaSemana] || 'Dia de aula'}. Veja sua grade de hoje e tarefas pendentes.
+          </p>
+        </div>
+        <Button
+          kind="secondary"
+          size="md"
+          renderIcon={Renew}
+          onClick={() => loadData(true)}
+          disabled={loading || refreshing}
+        >
+          {refreshing ? 'Atualizando...' : 'Atualizar Veloz'}
+        </Button>
       </div>
 
       {error && <InlineNotification kind="error" title="Erro:" subtitle={error} style={{ marginBottom: '1.5rem' }} />}

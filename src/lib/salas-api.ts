@@ -30,9 +30,9 @@ let cachedData: SalasApiResponse | null = null
 let cacheTimestamp = 0
 const CACHE_TTL_MS = 4 * 60 * 1000 // 4 minutes
 
-export async function fetchSalasToday(): Promise<SalasApiResponse> {
+export async function fetchSalasToday(forceRefresh?: boolean): Promise<SalasApiResponse> {
   const now = Date.now()
-  if (cachedData && now - cacheTimestamp < CACHE_TTL_MS) {
+  if (!forceRefresh && cachedData && now - cacheTimestamp < CACHE_TTL_MS) {
     return cachedData
   }
 

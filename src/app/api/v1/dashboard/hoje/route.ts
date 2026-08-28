@@ -8,8 +8,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const diaSemanaParam = searchParams.get('diaSemana')
     const customDay = diaSemanaParam ? parseInt(diaSemanaParam, 10) : undefined
+    const refresh = searchParams.get('refresh') === 'true' || searchParams.get('forceRefresh') === 'true'
 
-    const schedule = await getTodaySchedule(customDay)
+    const schedule = await getTodaySchedule(customDay, refresh)
     return NextResponse.json(schedule)
   } catch (error) {
     console.error('Error fetching today schedule:', error)
