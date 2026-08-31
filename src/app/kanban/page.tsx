@@ -51,6 +51,7 @@ export default function KanbanPage() {
   const [tarefas, setTarefas] = useState<Tarefa[]>([])
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([])
   const [grupos, setGrupos] = useState<Grupo[]>([])
+  const [antecedenciaHoras, setAntecedenciaHoras] = useState(48)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -75,10 +76,11 @@ export default function KanbanPage() {
   const loadData = async () => {
     try {
       setLoading(true)
-      const [tRes, dRes, gRes] = await Promise.all([
+      const [tRes, dRes, gRes, cRes] = await Promise.all([
         fetch('/api/v1/tarefas'),
         fetch('/api/v1/disciplinas'),
         fetch('/api/v1/grupos'),
+        fetch('/api/v1/config/webhook'),
       ])
 
       if (!tRes.ok || !dRes.ok || !gRes.ok) throw new Error('Erro ao carregar dados do servidor')
@@ -86,6 +88,10 @@ export default function KanbanPage() {
       setTarefas(await tRes.json())
       setDisciplinas(await dRes.json())
       setGrupos(await gRes.json())
+      if (cRes.ok) {
+        const configData = await cRes.json()
+        setAntecedenciaHoras(configData.antecedenciaHoras || 48)
+      }
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Erro ao carregar tarefas')
@@ -301,7 +307,7 @@ export default function KanbanPage() {
                   const prazoDate = new Date(t.prazo)
                   const isOverdue = col.id !== 'CONCLUIDO' && prazoDate < new Date()
                   const diffHours = (prazoDate.getTime() - Date.now()) / (1000 * 60 * 60)
-                  const isUrgent = col.id !== 'CONCLUIDO' && !isOverdue && diffHours < 48
+                  const isUrgent = col.id !== 'CONCLUIDO' && !isOverdue && diffHours < antecedenciaHoras
 
                   return (
                     <div
@@ -355,7 +361,7 @@ export default function KanbanPage() {
                           {isOverdue ? (
                             <span className="badge-overdue">Vencida</span>
                           ) : isUrgent ? (
-                            <span className="badge-urgent">&lt; 48h</span>
+                            <span className="badge-urgent">&lt; {antecedenciaHoras}h</span>
                           ) : null}
                         </div>
                       </div>
